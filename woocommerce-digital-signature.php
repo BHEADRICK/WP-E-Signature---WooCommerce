@@ -6,7 +6,7 @@
  * Plugin Name:       WP E-Signature - WooCommerce
  * Plugin URI:        http://aprv.me/2l9JldC
  * Description:       This add-on lets you require customers sign one (or more) legally binding contracts before they can complete their WooCommerce checkout process.
- * Version:           1.5.0.1
+ * Version:           1.5.1.0
  * Author:            Approve Me
  * Author URI:        http://aprv.me/2l9JldC
  * Text Domain:       esig-woocommerce
