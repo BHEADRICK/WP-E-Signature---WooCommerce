@@ -65,6 +65,10 @@ class ESIG_WOOCOMMERCE {
                 
                 add_action('admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
 	}
+
+    public static function is_wc3(){
+        return  version_compare( WC()->version, '3.0.0', '>=' ) ;
+    }
         
         /**
 	 * This is method esig_usr_adminmenu

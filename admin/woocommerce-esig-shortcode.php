@@ -58,7 +58,7 @@ if (!class_exists('ESIG_WOOCOMMERCE_Shortcode')) :
             $order_id = esig_woo_logic::get_after_checkout_order_id();
 
             if (!$order_id) {
-                $invitation = WP_E_Sig()->invite->getInviteBy('document_id', $docId);
+                $invitation = WP_E_Digital_Signature::instance()->invite->getInviteBy('document_id', $docId);
                 if (!$invitation) {
                     return $docContent;
                 }
@@ -78,7 +78,7 @@ if (!class_exists('ESIG_WOOCOMMERCE_Shortcode')) :
                 return $show;
             }
             $document_content = $doc->document_content;
-            $document_raw = WP_E_Sig()->signature->decrypt(ENCRYPTION_KEY, $document_content);
+            $document_raw = WP_E_Digital_Signature::instance()->signature->decrypt(ENCRYPTION_KEY, $document_content);
 
             if (has_shortcode($document_raw, 'esig-woo-order-details')) {
                 $show = false;
@@ -154,13 +154,13 @@ if (!class_exists('ESIG_WOOCOMMERCE_Shortcode')) :
 
             $template_data = get_object_vars($post);
 
-            WP_E_Sig()->view->renderPartial('', $template_data, true, '', $branding_template);
+            WP_E_Digital_Signature::instance()->view->renderPartial('', $template_data, true, '', $branding_template);
         }
 
         public function esig_order_details($atts) {
 
 
-            $api = WP_E_Sig();
+            $api = WP_E_Digital_Signature::instance();
 
             extract(shortcode_atts(array(
                             ), $atts, 'esig-woo-order-details'));
@@ -218,11 +218,11 @@ if (!class_exists('ESIG_WOOCOMMERCE_Shortcode')) :
 
         public function get_esig_order_id($document_id = null, $invitation_id = null) {
 
-            $meta = WP_E_Sig()->meta->get($document_id, 'esig-order_id');
+            $meta = WP_E_Digital_Signature::instance()->meta->get($document_id, 'esig-order_id');
             if ($meta) {
                 return $meta;
             } else {
-                return WP_E_Sig()->setting->get_generic('esig-order-id' . $invitation_id);
+                return WP_E_Digital_Signature::instance()->setting->get_generic('esig-order-id' . $invitation_id);
             }
         }
 

@@ -44,7 +44,7 @@ $show_customer_details = true;
 					'item_id'		     => $item_id,
 					'item'			     => $item,
 					'show_purchase_note' => $show_purchase_note,
-					'purchase_note'	     => $product ? get_post_meta( $product->id, '_purchase_note', true ) : '',
+					'purchase_note'	     => $product ? get_post_meta( ESIG_WOOCOMMERCE::is_wc3()?$product->get_id(): $product->id, '_purchase_note', true ) : '',
 					'product'	         => $product,
 				) );
 			}

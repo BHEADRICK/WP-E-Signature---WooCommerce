@@ -35,7 +35,7 @@ class esig_woocommerce_sad {
         $woo_array['pleaseslc'] = "Please Select Agreement Document";
 
         foreach ($stand_alone_pages as $sad_page) {
-            $document_status = WP_E_Sig()->document->getStatus($sad_page->document_id);
+            $document_status = WP_E_Digital_Signature::instance()->document->getStatus($sad_page->document_id);
 
             if ($document_status != 'trash') {
                 if ('publish' === get_post_status($sad_page->page_id)) {
@@ -82,10 +82,10 @@ class esig_woocommerce_sad {
 
         
         $document_id = $this->get_sad_document_id($page_id);
-        if (WP_E_Sig()->document->document_exists($document_id) == 0) {
+        if (WP_E_Digital_Signature::instance()->document->document_exists($document_id) == 0) {
             return false;
         }
-        $document_status = WP_E_Sig()->document->getStatus($document_id);
+        $document_status = WP_E_Digital_Signature::instance()->document->getStatus($document_id);
 
         if ($document_status != 'trash') {
 

@@ -174,57 +174,80 @@ class esig_woo_logic {
         esig_unsetcookie('esig-aftercheckout-order-id', COOKIEPATH);
     }
 
+
     public static function orderDetails($orderId) {
 
         $order = new WC_Order($orderId);
 
+        $ordermeta = get_post_meta($orderId);
+        $unset = [];
+        foreach($ordermeta as $key=>$item){
+
+            if(is_array($item) && count($item)==1){
+                $item = $item[0];
+            }
+
+            $new_key = ltrim($key, '_');
+
+            if(strpos($key, '_')===0){
+               $unset[] = $key;
+                $ordermeta[$new_key] = $item;
+
+            }
+
+        }
+
+        foreach($unset as $key){
+            unset($ordermeta[$key]);
+        }
+        
+        $ordermeta = (object) $ordermeta;
         $result = array(
-            "billing_address_1" => $order->billing_address_1,
-            "billing_address_2" => $order->billing_address_2,
-            "billing_city" => $order->billing_city,
-            "billing_company" => $order->billing_company,
-            "billing_country" => $order->billing_country,
-            "billing_email" => $order->billing_email,
-            "billing_first_name" => $order->billing_first_name,
-            "billing_last_name" => $order->billing_last_name,
-            "billing_phone" => $order->billing_phone,
-            "billing_postcode" => $order->billing_postcode,
-            "billing_state" => $order->billing_state,
-            "cart_discount" => $order->cart_discount,
-            "cart_discount_tax" => $order->cart_discount_tax,
-            "customer_ip_address" => $order->customer_ip_address,
-            "customer_message" => $order->customer_message,
-            "customer_note" => $order->customer_note,
-            //"customer_user"=>$order->customer_user,
-            "customer_user_agent" => $order->customer_user_agent,
-            "display_cart_ex_tax" => $order->display_cart_ex_tax,
-            "display_totals_ex_tax" => $order->display_totals_ex_tax,
-            "order_id" => $order->id,
-            "order_currency" => $order->order_currency,
-            "order_date" => $order->order_date,
-            "order_discount" => $order->order_discount,
-            "order_key" => $order->order_key,
-            "order_shipping" => $order->order_shipping,
-            "order_shipping_tax" => $order->order_shipping_tax,
-            "order_tax" => $order->order_tax,
-            "order_total" => $order->order_total,
-            "order_type" => $order->order_type,
-            "payment_method" => $order->payment_method,
-            "payment_method_title" => $order->payment_method_title,
-            "shipping_address_1" => $order->shipping_address_1,
-            "shipping_address_2" => $order->shipping_address_2,
-            "shipping_city" => $order->shipping_city,
-            "shipping_company" => $order->shipping_company,
-            "shipping_country" => $order->shipping_country,
-            "shipping_first_name" => $order->shipping_first_name,
-            "shipping_last_name" => $order->shipping_last_name,
-            "shipping_method_title" => $order->shipping_method_title,
-            "shipping_postcode" => $order->shipping_postcode,
-            "shipping_state" => $order->shipping_state,
+            "billing_address_1" => $ordermeta->billing_address_1,
+            "billing_address_2" => $ordermeta->billing_address_2,
+            "billing_city" => $ordermeta->billing_city,
+            "billing_company" => $ordermeta->billing_company,
+            "billing_country" => $ordermeta->billing_country,
+            "billing_email" => $ordermeta->billing_email,
+            "billing_first_name" => $ordermeta->billing_first_name,
+            "billing_last_name" => $ordermeta->billing_last_name,
+            "billing_phone" => $ordermeta->billing_phone,
+            "billing_postcode" => $ordermeta->billing_postcode,
+            "billing_state" => $ordermeta->billing_state,
+            "cart_discount" => $ordermeta->cart_discount,
+            "cart_discount_tax" => $ordermeta->cart_discount_tax,
+            "customer_ip_address" => $ordermeta->customer_ip_address,
+            "customer_message" => ESIG_WOOCOMMERCE::is_wc3()?$order->get_customer_note():$order->customer_message,
+            "customer_note" => ESIG_WOOCOMMERCE::is_wc3()?$order->get_customer_note():$order->customer_note ,
+            "customer_user_agent" => $ordermeta->customer_user_agent,
+            "display_cart_ex_tax" => ('excl' === get_option( 'woocommerce_tax_display_cart' )),
+            "display_totals_ex_tax" => ('excl' === get_option( 'woocommerce_tax_display_cart')),
+            "order_id" => $orderId,
+            "order_currency" => $ordermeta->order_currency,
+            "order_date" => ESIG_WOOCOMMERCE::is_wc3()?$order->get_date_created():$order->order_date,
+            "order_discount" => ESIG_WOOCOMMERCE::is_wc3()?$order->get_discount_total():$order->order_discount,
+            "order_key" => $ordermeta->order_key,
+            "order_shipping" => $ordermeta->order_shipping,
+            "order_shipping_tax" => $ordermeta->order_shipping_tax,
+            "order_tax" => $ordermeta->order_tax,
+            "order_total" => $ordermeta->order_total,
+            "order_type" => ESIG_WOOCOMMERCE::is_wc3()?$order->get_type():$order->order_type,
+            "payment_method" => $ordermeta->payment_method,
+            "payment_method_title" => $ordermeta->payment_method_title,
+            "shipping_address_1" => $ordermeta->shipping_address_1,
+            "shipping_address_2" => $ordermeta->shipping_address_2,
+            "shipping_city" => $ordermeta->shipping_city,
+            "shipping_company" => $ordermeta->shipping_company,
+            "shipping_country" => $ordermeta->shipping_country,
+            "shipping_first_name" => $ordermeta->shipping_first_name,
+            "shipping_last_name" => $ordermeta->shipping_last_name,
+            "shipping_method_title" => ESIG_WOOCOMMERCE::is_wc3()?$order->get_shipping_method(): $order->shipping_method_title,
+            "shipping_postcode" => $ordermeta->shipping_postcode,
+            "shipping_state" => $ordermeta->shipping_state,
         );
         // customer wordpress user details 
-        if ($order->customer_user) {
-            $wpUser = get_userdata($order->customer_user);
+        if ($ordermeta->customer_user) {
+            $wpUser = get_userdata($ordermeta->customer_user);
             $result['customer_wp_username'] = $wpUser->user_login;
             $result['customer_wp_user_displayname'] = $wpUser->display_name;
             $result['customer_wp_user_email'] = $wpUser->user_email;
@@ -237,7 +260,7 @@ class esig_woo_logic {
         if ($items) {
             foreach ($items as $itemId => $itemData) {
                 $result['product_' . $itemData['product_id'] . '_name'] = $itemData['name'];
-                $result['product_' . $itemData['product_id'] . '_quantity'] = $order->get_item_meta($itemId, '_qty', true);
+                $result['product_' . $itemData['product_id'] . '_quantity'] = ESIG_WOOCOMMERCE::is_wc3()?wc_get_order_item_meta($itemId, '_qty', true):$order->get_item_meta($itemId, '_qty', true);
             }
         }
 
